@@ -1,0 +1,2 @@
+[vagrant]
+192.168.88.88 ansible_ssh_user=vagrant

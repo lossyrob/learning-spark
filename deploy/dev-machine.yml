@@ -1,0 +1,48 @@
+---
+- hosts: all
+
+  sudo: yes
+
+  tasks:
+
+  - name: Install system packages
+    apt: pkg={{ item }} state=latest update_cache=yes
+    with_items:
+      - openjdk-7-jre
+  pre_tasks:
+
+  - name: Install spark
+    shell: 1.3.1-bin-hadoop2.6
+
+
+- name: Download Spark distribution
+  get_url: url="{{ spark_mirror }}/spark-{{ spark_version }}.tgz"
+           dest="/usr/local/src/spark-{{ spark_version }}.tgz"
+
+- name: Extract Spark distribution
+  unarchive: src="/usr/local/src/spark-{{ spark_version }}.tgz"
+             dest="/usr/lib"
+             copy=no
+             creates="/usr/lib/spark-{{ spark_version }}"
+
+- name: Setup Spark distribution symlinks
+  file: src="{{ item.src }}"
+        dest="{{ item.dest }}"
+        state=link
+  with_items:
+    - { src: "/usr/lib/spark-{{ spark_version }}", dest: "{{ spark_usr_dir }}" }
+    - { src: "/usr/lib/spark/conf", dest: "{{ spark_conf_dir }}/conf" }
+
+- name: Create shims for Spark binaries
+  template: src=spark-shim.j2
+            dest="/usr/bin/{{ item }}"
+            mode=0755
+  with_items:
+    - spark-class
+    - spark-shell
+    - spark-sql
+    - spark-submit
+
+- name: Configure Spark environment
+  template: src=spark-env.sh.j2
+            dest="{{ spark_conf_dir }}/conf/spark-env.sh"
