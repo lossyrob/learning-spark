@@ -12,18 +12,15 @@ object Version {
   val geotrellis  = "0.10.0-M1"
 }
 
-object PPABuild extends Build {
+object Build extends Build {
   // Default settings
   override lazy val settings =
     super.settings ++
   Seq(
-    shellPrompt := { s => Project.extract(s).currentProject.id + " > " },
     version := "0.1.0",
     scalaVersion := Version.scala,
     organization := "com.packt",
 
-    // disable annoying warnings about 2.10.x
-    conflictWarning in ThisBuild := ConflictWarning.disable,
     scalacOptions ++=
       Seq(
         "-deprecation",
@@ -42,13 +39,13 @@ object PPABuild extends Build {
 
   // Project: root
   lazy val root =
-    Project("explorer", file("."))
+    Project("root", file("."))
       .settings(rootSettings:_*)
 
   lazy val rootSettings =
     Seq(
       organization := "com.packt",
-      name := "parking-violations-explorer",
+      name := "coding-with-spark",
 
       scalaVersion := Version.scala,
 
@@ -59,7 +56,7 @@ object PPABuild extends Build {
       connectInput in run := true,
 
       libraryDependencies ++= Seq(
-        "org.apache.spark" %% "spark-core" % Version.spark % "provided",
+        "org.apache.spark" %% "spark-core" % Version.spark,
         "com.opencsv" % "opencsv"      % "3.4",
         "com.github.nscala-time" %% "nscala-time" % "1.6.0",
         "com.azavea.geotrellis" %% "geotrellis-raster" % Version.geotrellis,

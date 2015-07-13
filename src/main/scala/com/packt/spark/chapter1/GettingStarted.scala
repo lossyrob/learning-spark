@@ -16,10 +16,10 @@ object GettingStarted {
     val sc = getSparkContext()
 
     try {
-      val path = "../data/Parking_Violations-sample.csv"
+      val path = new java.io.File("./data/Parking_Violations-sample.csv").getAbsolutePath
 
       val rdd =
-        sc.textFile(path)
+        sc.textFile(s"file://$path")
 
       val count = rdd.count
 
