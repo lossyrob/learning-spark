@@ -1,0 +1,44 @@
+package com.packt.spark.section2
+
+import com.packt.spark._
+import org.apache.spark._
+
+object Accumulators {
+  val dataPath = "data/Parking_Violations-sample.csv"
+
+  def getSparkContext(): SparkContext = {
+    val conf = 
+      new SparkConf()
+        .setMaster("local[4]")
+        .setAppName("Accumulators")
+
+    new SparkContext(conf)
+  }
+
+  def main(args: Array[String]): Unit = {
+    val sc = getSparkContext()
+
+    val validAcc = sc.accumulator(0)
+    val invalidAcc = sc.accumulator(0)
+
+    val violationEntries =
+      sc.textFile(dataPath)
+        .filter(!_.startsWith("Issue"))
+        .flatMap { line =>
+          Violation.fromRow(line) match {
+            case v @ Some(_) =>
+              validAcc += 1
+              v
+            case None =>
+              invalidAcc += 1
+              None
+          }
+        }
+
+    val validCount = validAcc.value
+    val invalidCount = invalidAcc.value
+
+    println(s"Valid count: $validCount")
+    println(s"Invalid count: $invalidCount")
+  }
+}

@@ -1,0 +1,20 @@
+package com.packt.spark.section1
+
+import com.packt.spark._
+
+import org.apache.spark._
+
+object TransformationsAndActions extends ExampleApp {
+  def run() =
+    withSparkContext { implicit sc =>
+      val max: Double = 
+        sampleDataset
+          .flatMap(Violation.fromRow _)
+          .map(_.ticket.fine)
+          .max
+
+      println(f"\nMax is ${max}%,d.\n")
+
+      waitForUser()
+    }
+}

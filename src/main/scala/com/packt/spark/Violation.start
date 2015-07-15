@@ -1,0 +1,10 @@
+package com.packt.spark
+
+import com.github.nscala_time.time.Imports._
+import geotrellis.vector._
+
+case class Violation(
+  issueDate: DateTime,
+  location: Point,
+  ticket: Ticket
+)

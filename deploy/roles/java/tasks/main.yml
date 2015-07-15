@@ -1,0 +1,5 @@
+---
+- name: Install Java
+  apt: pkg={{ item }} state=latest update_cache=yes
+  with_items:
+    - openjdk-7-jre

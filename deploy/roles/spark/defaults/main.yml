@@ -1,0 +1,5 @@
+---
+spark_version: "1.4.0-bin-hadoop2.6"
+spark_mirror: "http://d3kbcqa49mib13.cloudfront.net"
+spark_usr_dir: "/usr/lib/spark"
+spark_conf_dir: "/etc/spark"

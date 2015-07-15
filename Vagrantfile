@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
     end
 
     devmachine.vm.provision :ansible do |ansible|
-      ansible.playbook = "deploy/dev-machine.yml"
+      ansible.playbook = "deploy/with-spark.yml"
       ansible.inventory_path = "deploy/hosts"
       ansible.limit = "192.168.88.88"
     end

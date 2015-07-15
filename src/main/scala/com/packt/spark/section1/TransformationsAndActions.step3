@@ -1,0 +1,16 @@
+package com.packt.spark.section1
+
+import com.packt.spark._
+
+import org.apache.spark._
+
+object TransformationsAndActions extends ExampleApp {
+  def run() =
+    withSparkContext { implicit sc =>
+      val parsed: RDD[Violation] = 
+        sampleDataset
+          .flatMap(Violation.fromRow _)
+
+      waitForUser()
+    }
+}

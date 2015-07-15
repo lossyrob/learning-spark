@@ -1,0 +1,22 @@
+package com.packt.spark.section1
+
+import com.packt.spark._
+
+import org.apache.spark._
+
+object TransformationsAndActions extends ExampleApp {
+  def run() =
+    withSparkContext { implicit sc =>
+      val parsed: RDD[Violation] = 
+        sampleDataset
+          .map(Violation.fromRow _)
+          .filter(_.isDefined)
+          .map(_.get)
+
+      val count = parsed.count
+
+      println(f"\nCount is ${count}%,d.\n")
+
+      waitForUser()
+    }
+}

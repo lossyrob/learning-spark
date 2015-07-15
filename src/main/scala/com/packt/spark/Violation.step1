@@ -1,0 +1,15 @@
+package com.packt.spark
+
+import com.github.nscala_time.time.Imports._
+import geotrellis.vector._
+
+case class Violation(
+  issueDate: DateTime,
+  location: Point,
+  ticket: Ticket
+)
+
+object Violation {
+  def parseTime(s: String): DateTime =
+    DateTime.parse(s, DateTimeFormat.forPattern("MM/DD/YYYY HH:mm:ss aa"))
+}

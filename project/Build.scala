@@ -45,7 +45,7 @@ object Build extends Build {
   lazy val rootSettings =
     Seq(
       organization := "com.packt",
-      name := "coding-with-spark",
+      name := "learning-spark",
 
       scalaVersion := Version.scala,
 
