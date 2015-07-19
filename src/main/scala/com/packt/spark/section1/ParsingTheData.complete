@@ -5,7 +5,7 @@ import com.packt.spark._
 import org.apache.spark._
 import org.apache.spark.rdd._
 
-object TransformationsAndActions extends ExampleApp {
+object ParsingTheData extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
       val parsed: RDD[Option[Violation]] = 
