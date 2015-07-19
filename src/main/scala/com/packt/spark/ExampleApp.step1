@@ -9,8 +9,6 @@ trait ExampleApp {
       new SparkConf()
         .setMaster("local[4]")
         .setAppName("Coding with Spark")
-        .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-        .set("spark.kryo.registrator", "com.packt.spark.KryoRegistrator")
 
     val sc = new SparkContext(conf)
     

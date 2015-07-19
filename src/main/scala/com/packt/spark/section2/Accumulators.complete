@@ -1,55 +1,47 @@
 package com.packt.spark.section2
 
 import com.packt.spark._
-
 import org.apache.spark._
-import org.apache.spark.SparkContext._
-import com.github.nscala_time.time.Imports._
 
-object Accumulators {
-  val dataPath = "data/Parking_Violations.csv"
+object Accumulators extends ExampleApp {
+  def run() =
+    withSparkContext { implicit sc =>
+      val infoAcc = sc.accumulable(DatasetInfo())
 
-  def getSparkContext(): SparkContext = {
-    val conf = 
-      new SparkConf()
-        .setMaster("local[4]")
-        .setAppName("Accumulators")
+      val violationEntries = 
+        sampleDataset
+          .flatMap { line =>
+            val parsed = Violation.fromRow(line)
+            infoAcc += parsed
+            parsed
+           }
 
-    new SparkContext(conf)
-  }
+      // OR
 
-  def main(args: Array[String]): Unit = {
-    val sc = getSparkContext()
+      val violationEntries = 
+        sampleDataset
+          .map(Violation.fromRow _)
+          .map(infoAcc += _)
+          .flatten
 
-    val infoAcc = sc.accumulable(DatasetInfo())
+      // More computations would happen here...
+      violationEntries.foreach { x =>  }
 
-    val violationEntries =
-      sc.textFile(dataPath)
-        .filter(!_.startsWith("Issue"))
-        .flatMap { line =>
-          val parsed = ViolationEntry.parseLine(line)
-          infoAcc += parsed
-          parsed
-        }
+      val DatasetInfo(
+        dateRange,
+        validCount,
+        invalidCount,
+        bigTicketItems,
+        totalFines
+      ) = infoAcc.value
 
-    // More computations would happen here...
-    violationEntries.foreach { x =>  }
+      println(s"Valid count: $validCount")
+      println(s"Invalid count: $invalidCount")
+      println(s"Date range: ${dateRange.start} to ${dateRange.end}")
+      println("Big ticket items:")
+      for( (desc, fine) <- bigTicketItems) {
+        println(s" $fine  $desc")
+      }
 
-    val DatasetInfo(
-      dateRange,
-      validCount,
-      invalidCount,
-      bigTicketItems,
-      totalFines
-    ) = infoAcc.value
-
-    println(s"Valid count: $validCount")
-    println(s"Invalid count: $invalidCount")
-    println(s"Date range: ${dateRange.start} to ${dateRange.end}")
-    println("Big ticket items:")
-    for( (desc, fine) <- bigTicketItems) {
-      println(s" $fine  $desc")
     }
-
-  }
 }

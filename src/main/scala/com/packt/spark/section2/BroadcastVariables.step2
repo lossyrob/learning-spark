@@ -7,26 +7,14 @@ object BroadcastVariables extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
       val neighborhoods = Neighborhoods.fromJson("data/Neighborhoods_Philadelphia.geojson")
-      val bcNeighborhoods = sc.broadcast(neighborhoods)
 
       val neighborhoodViolations =
         fullDataset
           .flatMap(Violation.fromRow _)
           .flatMap { violationEntry =>
-             val nbh = bcNeighborhoods.value
-             nbh
-              .find(_.geom.contains(violationEntry.location)) // Be explicit about this at first, with type
+            neighborhoods
+              .find(_.geom.contains(violationEntry.location))
               .map(_.data.name)
            }
-
-      val neighborhoodCounts =
-        neighborhoodViolations
-          .countByValue
-
-      for((name, count) <- neighborhoodCounts.toSeq.sortBy(_._2)) {
-        println(f"\t\t$name%-20s   $count%20d")
-      }
-
-      waitForUser()
     }
 }

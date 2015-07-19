@@ -34,7 +34,7 @@ object DatasetInfo {
     def addAccumulator(info: DatasetInfo, violationOption: Option[Violation]): DatasetInfo =
       violationOption match {
         case Some(violation) =>
-          val dateRange = DataDateRange.covering(DataDateRange(violation.issueDate), info.dateRange)
+          val dateRange = DataDateRange.covering(DataDateRange(violation.issueTime), info.dateRange)
           val validCount = info.validCount + 1
           val invalidCount = info.invalidCount
           val bigTicketItems = 

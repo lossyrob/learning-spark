@@ -5,7 +5,7 @@ import geotrellis.vector._
 import com.opencsv._
 
 case class Violation(
-  issueDate: DateTime,
+  issueTime: DateTime,
   location: Point,
   ticket: Ticket
 )
@@ -45,7 +45,7 @@ object Violation {
     parseLocation(fields(violationColumn("coordinates")))
       .map { point =>
         Violation(
-          issueDate = parseTime(fields(violationColumn("issue_date"))),
+          issueTime = parseTime(fields(violationColumn("issue_date"))),
           location = point,
           Ticket(
             description = fields(violationColumn("description")),

@@ -9,6 +9,7 @@ object TransformationsAndActions extends ExampleApp {
     withSparkContext { implicit sc =>
       val (sum, count): (Double, Double) =
         fullDataset
+          .filter(!_.startsWith("Issue"))
           .flatMap(Violation.fromRow _)
           .map(_.ticket.fine)
           .aggregate( (0.0, 0.0))( 

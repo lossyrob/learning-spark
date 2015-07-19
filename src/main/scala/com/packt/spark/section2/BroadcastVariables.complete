@@ -24,7 +24,7 @@ object BroadcastVariables extends ExampleApp {
           .countByValue
 
       for((name, count) <- neighborhoodCounts.toSeq.sortBy(_._2)) {
-        println(f"\t\t$name%-20s   $count%20d")
+        println(s"$name   $count")
       }
 
       waitForUser()
