@@ -8,11 +8,7 @@ import org.apache.spark.rdd._
 object ParsingTheData extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
-      val parsed: RDD[Option[Violation]] = 
-        sampleDataset
-          .map(Violation.fromRow _)
-
-      val count = parsed.count
+      val count = fullDataset.count
 
       println(f"\nCount is ${count}%,d.\n")
 

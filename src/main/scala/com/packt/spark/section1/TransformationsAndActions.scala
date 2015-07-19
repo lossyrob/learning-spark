@@ -3,24 +3,18 @@ package com.packt.spark.section1
 import com.packt.spark._
 
 import org.apache.spark._
+import org.apache.spark.rdd._
 
-object TransformationsAndActions extends ExampleApp {
+object ParsingTheData extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
-      val (sum, count): (Double, Double) =
-        fullDataset
-          .filter(!_.startsWith("Issue"))
-          .flatMap(Violation.fromRow _)
-          .map(_.ticket.fine)
-          .aggregate( (0.0, 0.0))( 
-            { (acc, fine) => (acc._1 + fine, acc._2 + 1) }, 
-            { (acc1, acc2) => (acc1._1 + acc2._1, acc1._2 + acc2._2) }
-          )
+      val parsed: RDD[Option[Violation]] = 
+        sampleDataset
+          .map(Violation.fromRow _)
 
-      val mean = sum / count
+      val count = parsed.count
 
-      println(f"\nSum is $$${sum}%,1.2f\n")
-      println(f"\nMean is $$${mean}%,1.2f\n")
+      println(f"\nCount is ${count}%,d.\n")
 
       waitForUser()
     }
