@@ -9,8 +9,6 @@ trait ExampleApp {
       new SparkConf()
         .setMaster("local[4]")
         .setAppName("Learning Spark")
-        .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-        .set("spark.kryo.registrator", "com.packt.spark.KryoRegistrator")
 
     val sc = new SparkContext(conf)
 
@@ -32,12 +30,12 @@ trait ExampleApp {
   def fullDataset(implicit sc: SparkContext) =
     csvDataset("./data/Parking_Violations.csv")
 
-  def violations(implicit sc: SparkContext) =
+  def violations =
     fullDataset
       .flatMap(Violation.fromRow _)
       .filter(_.ticket.fine > 5.0)
 
-  def sampleViolations(implicit sc: SparkContext) =
+  def sampleViolations =
     sampleDataset
       .flatMap(Violation.fromRow _)
       .filter(_.ticket.fine > 5.0)

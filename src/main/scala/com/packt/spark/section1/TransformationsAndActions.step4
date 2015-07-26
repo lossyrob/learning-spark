@@ -1,23 +1,27 @@
 package com.packt.spark.section1
 
 import com.packt.spark._
-
 import org.apache.spark._
 
 object TransformationsAndActions extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
-      val max: Double = 
-        sampleDataset
+      val violations = 
+        fullDataset
           .flatMap(Violation.fromRow _)
+          .filter(_.ticket.fine > 5.0)
+
+      val (sum, count): (Double, Double) =
+        violations
           .map(_.ticket.fine)
-          .fold(0.0) { (currMax, fine) =>
-            if(fine > currMax) { fine } 
-            else { currMax }
-           }
+          .aggregate( (0.0, 0.0))( 
+            { (acc, fine) => (acc._1 + fine, acc._2 + 1) }, 
+            { (acc1, acc2) => (acc1._1 + acc2._1, acc1._2 + acc2._2) }
+          )
 
-      println(f"\nMax is ${max}%,d.\n")
+      val mean = sum / count
 
-      waitForUser()
+      println(f"\nSum is $$${sum}%,1.2f")
+      println(f"\nMean is $$${mean}%,1.2f\n")
     }
 }

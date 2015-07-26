@@ -46,6 +46,8 @@ object Build extends Build {
       // raise memory limits here if necessary
       javaOptions += "-Xmx2G",
 
+      mainClass in (Compile, run) := Some("com.packt.spark.section1.TransformationsAndActions"),
+
       fork := true,
       connectInput in run := true,
 

@@ -2,6 +2,7 @@ package com.packt.spark
 
 import com.github.nscala_time.time.Imports._
 import geotrellis.vector._
+import com.opencsv._
 
 case class Violation(
   issueTime: DateTime,
@@ -22,5 +23,23 @@ object Violation {
       case coordsRx(lat, lng) => Some(Point(lng.toDouble, lat.toDouble))
       case _ => None
     }
+  val violationColumn: Map[String, Int] =
+    List(
+      "issue_date",
+      "state",
+      "plate",
+      "division",
+      "location",
+      "location-standaridized",
+      "coordinates",
+      "description",
+      "fine",
+      "agency",
+      "location"
+    ).zipWithIndex.toMap
 
+  def fromRow(row: String): Violation = {
+    private val parser = new CSVParser(',')
+    val fields = parser.parseLine(row)
+  }
 }

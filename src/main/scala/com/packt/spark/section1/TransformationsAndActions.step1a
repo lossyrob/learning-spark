@@ -10,13 +10,11 @@ object TransformationsAndActions extends ExampleApp {
         fullDataset
           .flatMap(Violation.fromRow _)
 
-      val maxFine =
-        violations.map(_.ticket.fine).max
+      val zeroCount =
+        violations
+          .filter(_.ticket.fine == 0.0)
+          .count
 
-      val minFine =
-        violations.map(_.ticket.fine).min
-
-      println(s"Maximum fine amount: $maxFine")
-      println(s"Minimum fine amount: $minFine")
+      println(s"Number of zero fine tickets: $zeroCount")
     }
 }

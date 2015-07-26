@@ -6,5 +6,7 @@ import geotrellis.vector._
 case class Violation(
   issueDate: DateTime,
   location: Point,
+  state: String,
+  agency: String,
   ticket: Ticket
 )

@@ -10,7 +10,7 @@ object TransformationsAndActions extends ExampleApp {
       val violations = 
         fullDataset
           .flatMap(Violation.fromRow _)
-          .filter(_.ticket.fine != 0.0)
+          .filter(_.ticket.fine > 5.0)
 
       val maxTicket: Ticket =
         violations

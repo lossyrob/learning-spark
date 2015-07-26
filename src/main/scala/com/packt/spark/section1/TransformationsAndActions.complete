@@ -4,63 +4,45 @@ import com.packt.spark._
 
 import org.apache.spark._
 
-object TransformationsAndActions {
+object TransformationsAndActions extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
-      val count = 
-        sampleDataset
-          .map(Violation.fromRow _)
-          .filter(_.isDefined)
-          .map(_.get)
-          .count
-
-      val count = 
-        sampleDataset
-          .flatMap(Violation.fromRow _)
-          .count
-
-      println(f"\nCount is ${count}%,d.\n")
-
-      waitForUser()
-
       // Get distinct violations.
+      println("Violation Types:")
       val violationTypes =
-        violationEntries
+        violations
           .map(_.ticket.description)
           .distinct
+          .foreach { desc => println(s" $desc") }
 
-      println("Violation Types:")
-      violationTypes
-        .foreach { desc => println(s" $desc") }
-
-      sampleDataset
-        .fold(Int.MinValue) { (acc, violation) =>
-          if(violation.ticket.fine > acc) {
-            violation.ticket.fine
-          } else { acc }
-        }
+      val maxFine = 
+        violations
+          .map(_.ticket.fine)
+          .fold(Double.MinValue) { (acc, fine) =>
+            math.max(acc, fine)
+          }
 
       // Find max fine.
       val maxFineValue =
-        violationEntries.map(_.ticket.fine).max
+        violations.map(_.ticket.fine).max
       val minFineValue =
-        violationEntries.map(_.ticket.fine).max
+        violations.map(_.ticket.fine).min
 
       println(s"Min fine value: $minFineValue")
       println(s"Max fine value: $maxFineValue")
 
       val maxTicket: Ticket =
-        violationEntries
+        violations
           .map(_.ticket)
           .reduce { (ticket1, ticket2) =>
-            if(ticket1.fine1 > ticket2.fine2) ticket1
+            if(ticket1.fine > ticket2.fine) ticket1
             else ticket2
            }
 
+      println(s"Maximum Ticket: $maxTicket")
+
       val (sum, count): (Double, Double) =
-        fullDataset
-          .filter(!_.startsWith("Issue"))
-          .flatMap(Violation.fromRow _)
+        violations
           .map(_.ticket.fine)
           .aggregate( (0.0, 0.0))( 
             { (acc, fine) => (acc._1 + fine, acc._2 + 1) }, 
@@ -75,17 +57,15 @@ object TransformationsAndActions {
       println(s"Max ticket: $maxTicket")
 
       val bigTicketItems =
-        violationEntries
+        violations
           .filter(_.ticket.fine > 1000.00)
-          .map(_.ticket.description)
+          .map(_.ticket)
           .distinct
           .collect
 
       println("Big ticket items:")
-      for( (desc, fine) <- bigTicketItems) {
-        println(s" $fine  $desc")
+      for(Ticket(fine, description) <- bigTicketItems) {
+        println(s" $fine  $description")
       }
-
-
     }
 }

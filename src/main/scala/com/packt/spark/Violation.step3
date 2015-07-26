@@ -2,6 +2,7 @@ package com.packt.spark
 
 import com.github.nscala_time.time.Imports._
 import geotrellis.vector._
+import com.opencsv._
 
 case class Violation(
   issueTime: DateTime,
@@ -23,4 +24,9 @@ object Violation {
       case _ => None
     }
 
+  def fromRow(row: String): Violation = {
+    val parser = new CSVParser(',')       
+    val fields = parser.parseLine(row)
+    ???
+  }
 }

@@ -1,16 +1,33 @@
 package com.packt.spark.section1
 
 import com.packt.spark._
-
 import org.apache.spark._
 
 object TransformationsAndActions extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
-      val parsed: RDD[Violation] = 
-        sampleDataset
+      val violations = 
+        fullDataset
           .flatMap(Violation.fromRow _)
+          .filter(_.ticket.fine > 5.0)
 
-      waitForUser()
+      val ticketCount =
+        violations
+          .map(_.ticket)
+          .distinct
+          .count
+
+      val descriptions =
+        violations
+          .map(_.ticket.description)
+          .distinct
+          .collect
+
+      val descriptionCount = descriptions.size
+
+      println(s"Number of distinct tickets: $ticketCount")
+      println(s"Number of distinct ticket descriptions: $descriptionCount")
+      println("Violation Types:")
+      descriptions.sorted.foreach { desc => println(s" $desc") }
     }
 }
