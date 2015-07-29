@@ -40,13 +40,11 @@ object Violation {
       case _ => None
     }
 
-  def rowParser: String => Option[Violation] = {
+  def fromRow(row: String): Option[Violation] = {
     val parser = new CSVParser(',')
-
-    { row: String =>
-      val fields = parser.parseLine(row)
-      parseLocation(fields(violationColumn("coordinates")))
-        .map { point =>
+    val fields = parser.parseLine(row)
+    parseLocation(fields(violationColumn("coordinates")))
+      .map { point =>
         Violation(
           issueTime = parseTime(fields(violationColumn("issue_date"))),
           location = point,
@@ -58,9 +56,5 @@ object Violation {
           )
         )
       }
-    }
   }
-
-  def fromRow(row: String): Option[Violation] =
-    rowParser(row)
 }

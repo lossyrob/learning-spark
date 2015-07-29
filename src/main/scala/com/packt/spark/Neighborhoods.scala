@@ -18,7 +18,10 @@ object Neighborhoods {
       }
   }
 
-  def fromJson(path: String): Seq[MultiPolygonFeature[NeighborhoodData]] = {
+  def apply(): Neighborhoods =
+    fromJson("data/Neighborhoods_Philadelphia.geojson")
+
+  def fromJson(path: String): Neighborhoods = {
     val neighborhoods = 
       GeoJson.fromFile[JsonFeatureCollection](path)
         .getAllMultiPolygonFeatures[(String, Double)]
@@ -30,6 +33,5 @@ object Neighborhoods {
         case (name, area) => NeighborhoodData(name, (area * 100) / totalArea)
       }
     }
-
   }
 }

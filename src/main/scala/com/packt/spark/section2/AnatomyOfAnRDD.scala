@@ -9,18 +9,8 @@ import geotrellis.vector.io.json._
 object AnatomyOfAnRDD extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
-      val centroid =
-        fullDataset
-          .flatMap(Violation.fromRow _)
-          .map(_.location)
-          .mapPartitions { partition =>
-            Seq(partition.toSeq.centroid).iterator
-           }
-          .collect
-          .flatMap(_.as[Point])
-          .centroid.as[Point].get
-
-      println(s"Centroid: ${centroid.toGeoJson}.")
+      val count = violations.count
+      println(s"Count is $count")
       waitForUser()
     }
 }

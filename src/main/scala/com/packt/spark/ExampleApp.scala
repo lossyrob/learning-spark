@@ -34,12 +34,18 @@ trait ExampleApp {
 
   def violations(implicit sc: SparkContext) =
     fullDataset
-      .flatMap(Violation.fromRow _)
+      .mapPartitions { rows =>
+        val parse = Violation.rowParser
+        rows.flatMap { row => parse(row) }
+      }
       .filter(_.ticket.fine > 5.0)
 
   def sampleViolations(implicit sc: SparkContext) =
     sampleDataset
-      .flatMap(Violation.fromRow _)
+      .mapPartitions { rows =>
+        val parse = Violation.rowParser
+        rows.flatMap { row => parse(row) }
+      }
       .filter(_.ticket.fine > 5.0)
 
   def waitForUser(): Unit = {

@@ -2,10 +2,16 @@ package com.packt.spark.section1
 
 import com.packt.spark._
 import org.apache.spark._
+import org.apache.spark.rdd._
 
 object TransformationsAndActions extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
+      val violations: RDD[Violation] =
+        fullDataset
+          .flatMap(Violation.fromRow _)
+          .filter(_.ticket.fine > 5.0)
+
       val maxFine =
         violations.map(_.ticket.fine).max
 

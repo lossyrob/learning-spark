@@ -1,8 +1,8 @@
 package com.packt.spark.section1
 
 import com.packt.spark._
-
 import org.apache.spark._
+import org.apache.spark.rdd._
 
 object TransformationsAndActions extends ExampleApp {
   def run() =

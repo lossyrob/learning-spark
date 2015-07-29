@@ -7,7 +7,7 @@ import geotrellis.vector._
 import org.apache.spark.storage._
 import com.github.nscala_time.time.Imports._
 
-object KeyValueRDDs extends ExampleApp {
+object Caching extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
       val neighborhoods = Neighborhoods.fromJson("data/Neighborhoods_Philadelphia.geojson")
@@ -32,10 +32,9 @@ object KeyValueRDDs extends ExampleApp {
                 (violation, data)
               }
            }
-          .persist(StorageLevel.MEMORY_ONLY)
-//          .persist(StorageLevel.MEMORY_AND_DISK)
-//          .persist(StorageLevel.MEMORY_ONLY_SER)
-//          .persist(StorageLevel.MEMORY_AND_DISK)
+//          .persist(StorageLevel.MEMORY_ONLY)
+//          .persist(StorageLevel.MEMORY_ONLY_SER)       // Weirdness with Kryo
+          .persist(StorageLevel.MEMORY_AND_DISK)
 
 
       val densityAggregations =
@@ -64,35 +63,4 @@ object KeyValueRDDs extends ExampleApp {
 
       waitForUser()
     }
-
-  // def run() =
-  //   withSparkContext { implicit sc =>
-  //     val neighborhoods = Neighborhoods.fromJson("data/Neighborhoods_Philadelphia.geojson")
-  //     val bcNeighborhoods = sc.broadcast(neighborhoods)
-
-  //     val neighborhoodViolationDensities =
-  //       fullDataset
-  //         .flatMap(Violation.fromRow _)
-  //         .flatMap { violationEntry =>
-  //           val nbh = bcNeighborhoods.value
-  //           nbh
-  //             .find(_.geom.contains(violationEntry.location))
-  //             .map { case Feature(_, data) =>
-  //               (data, 1)
-  //              }
-  //          }
-  //         .reduceByKey { (a, b) => a + b }
-  //         .map { case (NeighborhoodData(name, area), count) => 
-  //           (count / area, name)
-  //          }
-  //         .sortByKey()
-  //         .collect
-
-  //     neighborhoodViolationDensities
-  //       .foreach { case (density, name) =>
-  //         println(s"$name   $density")
-  //       }
-
-  //     waitForUser()
-  //   }
 }
