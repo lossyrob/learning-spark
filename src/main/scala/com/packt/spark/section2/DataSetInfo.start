@@ -1,0 +1,11 @@
+package com.packt.spark.section2
+
+import com.packt.spark._
+import org.apache.spark._
+
+case class DatasetInfo(
+  dateRange: DataDateRange = DataDateRange.empty,
+  validCount: Int = 0,
+  bigTicketItems: Set[(String, Double)] = Set(),
+  totalFines: Double = 0.0
+)

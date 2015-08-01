@@ -13,22 +13,9 @@ object DataDateRange {
   def apply(dateTime: DateTime): DataDateRange =
     DataDateRange(dateTime, dateTime)
 
-  def covering(range1: DataDateRange, range2: DataDateRange): DataDateRange =
-    if(range1.start == emptyDate) range2
-    else {
-      if(range2.start == emptyDate) range1
-      else {
-        val ordering = implicitly[Ordering[DateTime]]
-        val start = ordering.min(range1.start, range2.start)
-        val end = ordering.max(range1.end, range2.end)
-
-        DataDateRange(start, end)
-      }
-    }
-
   implicit object DataDateRangeAccumulatorParam extends AccumulatorParam[DataDateRange] {
     def zero(range: DataDateRange): DataDateRange = empty
     def addInPlace(range1: DataDateRange, range2: DataDateRange): DataDateRange =
-      DataDateRange.covering(range1, range2)
+      ???
   }
 }

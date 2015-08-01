@@ -46,7 +46,8 @@ object Build extends Build {
       // raise memory limits here if necessary
       javaOptions += "-Xmx4G",
 
-      mainClass in (Compile, run) := Some("com.packt.spark.section5.FeatureExtraction"),
+//      mainClass in (Compile, run) := Some("com.packt.spark.section5.FeatureExtraction"),
+      mainClass in (Compile, run) := Some("com.packt.spark.section2.AdvancedAccumulators"),
 
       fork := true,
       connectInput in run := true,
