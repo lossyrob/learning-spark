@@ -47,7 +47,7 @@ object Build extends Build {
       javaOptions += "-Xmx4G",
 
 //      mainClass in (Compile, run) := Some("com.packt.spark.section5.FeatureExtraction"),
-      mainClass in (Compile, run) := Some("com.packt.spark.section2.AdvancedAccumulators"),
+      mainClass in (Compile, run) := Some("com.packt.spark.section2.Serialization"),
 
       fork := true,
       connectInput in run := true,

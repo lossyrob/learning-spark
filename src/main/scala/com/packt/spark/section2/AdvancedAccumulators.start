@@ -3,7 +3,7 @@ package com.packt.spark.section2
 import com.packt.spark._
 import org.apache.spark._
 
-object Accumulators extends ExampleApp {
+object AdvancedAccumulators extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
       val validAcc = sc.accumulator(0)

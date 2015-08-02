@@ -3,5 +3,5 @@ package com.packt
 import geotrellis.vector._
 
 package object spark {
-  type Neighborhoods = Seq[MultiPolygonFeature[NeighborhoodData]]
+  type Neighborhoods = Seq[Feature[Polygon, NeighborhoodData]]
 }

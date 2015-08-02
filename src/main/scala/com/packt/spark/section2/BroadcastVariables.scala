@@ -11,9 +11,14 @@ object BroadcastVariables extends ExampleApp {
 
       val neighborhoodViolations =
         fullDataset
-          .flatMap(Violation.fromRow _)
+          .mapPartitions { rows =>
+            val parse = Violation.rowParser
+            rows.flatMap { row => parse(row) }
+          }
+          .filter(_.ticket.fine > 5.0)
           .flatMap { violationEntry =>
              val nbh = bcNeighborhoods.value
+//             val nbh = neighborhoods
              nbh
               .find(_.geom.contains(violationEntry.location)) // Be explicit about this at first, with type
               .map(_.data.name)

@@ -10,16 +10,10 @@ object BroadcastVariables extends ExampleApp {
 
       val neighborhoodViolations =
         fullDataset
-          .flatMap(Violation.fromRow _)
-          .flatMap { violationEntry =>
-            val containingNeighborhood: Option[MultiPolygonFeature[NeighborhoodData]] =
-              neighborhoods
-                .find { feature =>
-                  feature.geom.contains(violationEntry.location)
-                }
+          .mapPartitions { rows =>
+            val parse = Violation.rowParser
+            rows.flatMap { row => parse(row) }
+          }
+          .filter(_.ticket.fine > 5.0)
 
-            containingNeighborhood.map { feature =>
-              feature..data.name
-            }
-           }
 }

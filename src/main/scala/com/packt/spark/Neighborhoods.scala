@@ -29,9 +29,11 @@ object Neighborhoods {
     val totalArea = neighborhoods.map(_.data._2).sum
 
     neighborhoods.map { feature =>
-      feature.mapData { 
-        case (name, area) => NeighborhoodData(name, (area * 100) / totalArea)
-      }
+      feature
+        .mapGeom(_.polygons.head)
+        .mapData {
+          case (name, area) => NeighborhoodData(name, (area * 100) / totalArea)
+        }
     }
   }
 }

@@ -9,6 +9,10 @@ class KryoRegistrator extends SparkKryoRegistrator {
 //    kryo.setRegistrationRequired(true)
     kryo.register(classOf[Violation])
     kryo.register(classOf[Ticket])
+    kryo.register(classOf[section2.Serialization.TimeDelta])
+
+    kryo.register(classOf[org.joda.time.DateTime], new de.javakaffee.kryoserializers.jodatime.JodaDateTimeSerializer)
+
     kryo.register(classOf[NeighborhoodData])
     kryo.register(classOf[MultiPolygon])
     kryo.register(classOf[Point])
@@ -28,7 +32,5 @@ class KryoRegistrator extends SparkKryoRegistrator {
     kryo.register(classOf[Array[com.vividsolutions.jts.geom.Coordinate]])
     kryo.register(classOf[Feature[_, _]])
     kryo.register(classOf[Array[scala.Tuple2[_, _]]])
-
-    kryo.register(classOf[org.joda.time.DateTime], new de.javakaffee.kryoserializers.jodatime.JodaDateTimeSerializer)
   }
 }
