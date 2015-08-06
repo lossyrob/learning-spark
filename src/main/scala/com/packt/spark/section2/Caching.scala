@@ -2,64 +2,76 @@ package com.packt.spark.section2
 
 import com.packt.spark._
 import org.apache.spark._
+import org.apache.spark.rdd._
 import geotrellis.vector._
 
 import org.apache.spark.storage._
 import com.github.nscala_time.time.Imports._
 
 object Caching extends ExampleApp {
-  val timeFilters =
-    Map[String, DateTime => Int](
-      ("allTime", { dt => 0 }),
-      ("monthOfYear", { dt => dt.getMonthOfYear }),
-      ("dayOfMonth", { dt => dt.getDayOfMonth }),
-      ("dayOfYear", { dt => dt.getDayOfYear }),
-      ("dayOfWeek", { dt => dt.getDayOfWeek }),
-      ("hourOfDay", { dt => dt.getHourOfDay })
-    )
+  // val timeGroups =
+  //   Map[String, DateTime => Int](
+  //     ("allTime", { dt => 0 }),
+  //     ("monthOfYear", { dt => dt.getMonthOfYear }),
+  //     ("dayOfMonth", { dt => dt.getDayOfMonth }),
+  //     ("dayOfYear", { dt => dt.getDayOfYear }),
+  //     ("dayOfWeek", { dt => dt.getDayOfWeek }),
+  //     ("hourOfDay", { dt => dt.getHourOfDay })
+  //   )
 
 
-  def densityAggregations(neighborhoods: Neighborhoods)(implicit sc: SparkContext) = {
-      val bcNeighborhoods = sc.broadcast(neighborhoods)
+  // def neighborhoodGroupCounts(neighborhoodViolations: RDD[(NeighborhoodData, Violation)]): RDD[(NeighborhoodData, (String, Int, Int))] = {
+  //   val rdds: Seq[RDD[(NeighborhoodData, Map[Int, Int])]] =
+  //     for(groupDef <- timeGroups) yield {
+  //       val groupType = groupDef._1
+  //       val groupingFunc = groupDef._2
 
-      val violationsWithNeighborhoods = 
-        violations
-          .flatMap { violation =>
-            bcNeighborhoods.value
-              .find(_.geom.contains(violation.location))
-              .map { case Feature(_, data) =>
-                (violation, data)
-              }
-           }
-          .persist(StorageLevel.MEMORY_AND_DISK)
+  //       neighborhoodViolations
+  //         .mapValues { violation =>
+  //           groupingFunc(violation.issueTime)
+  //         }
+  //         .combineByKey(
+  //           { groupId: Int => Map(groupId -> 1) },
+  //           { (acc: Map[Int, Int], groupId: Int) => acc + (groupId -> (acc.getOrElse(groupId, 0) + 1)) },
+  //           { (acc1: Map[Int, Int], acc2: Map[Int, Int]) =>
+  //             (acc1.keySet ++ acc2.keySet).map { k => (k, acc1.getOrElse(k, 0) + acc2.getOrElse(k, 0)) }.toMap
+  //           }
+  //         )
+  //         .flatMapValues { groupCountMap =>
+  //           groupCountMap.map { case (groupId, count) => (groupType, groupId, count) }
+  //         }
+  //     }
 
-      timeFilters.map { case (key, groupingFunc) =>
-        val neighborhoodViolationDensities =
-          violationsWithNeighborhoods
-            .map { case (violation, data) =>
-              val timeGroup = groupingFunc(violation.issueTime)
-              ((data, timeGroup), 1)
-             }
-            .reduceByKey { (a, b) => a + b }
-            .map { case ((NeighborhoodData(name, area), timeGroup), count) =>
-              ((name, timeGroup), count / area)
-             }
-            .collect
-            .toMap
-        (key, neighborhoodViolationDensities)
-      }
-  }
+  //   rdds.reduce(_.union(_))
+  // }
 
-  def run() =
-    withSparkContext { implicit sc =>
-      val neighborhoods = Neighborhoods.fromJson("data/Neighborhoods_Philadelphia.geojson")
-      for((timeKey, map) <- densityAggregations(neighborhoods)) {
-        println(timeKey)
-        map.foreach { case ((neighborhood, timeGroup), density) =>
-          println(s"  $neighborhood $timeGroup   $density")
-        }
-      }
+  def run() = ???
+  //   withSparkContext { implicit sc =>
+  //     val neighborhoods = Neighborhoods.fromJson("data/Neighborhoods_Philadelphia.geojson")
+  //     val bcNeighborhoods = sc.broadcast(neighborhoods)
 
-      waitForUser()
-    }
+  //     val neighborhoodViolations =
+  //       fullDataset
+  //         .mapPartitions { rows =>
+  //           val parse = Violation.rowParser
+  //           rows.flatMap { row => parse(row) }
+  //         }
+  //         .filter(_.ticket.fine > 5.0)
+  //         .flatMap { violation =>
+  //           val nb = bcNeighborhoods.value
+  //           nb.find { case Feature(polygon, _) =>
+  //             polygon.contains(violation.location)
+  //           }.map { case Feature(_, data) =>
+  //             (data, violation)
+  //           }
+  //         }
+  //         .partitionBy(new HashPartitioner(16))
+  //         .persist(StorageLevel.MEMORY_AND_DISK)
+
+  //     val groupCounts = neighborhoodGroupCounts(neighborhoodViolations)
+
+
+
+  //     waitForUser()
+  //   }
 }
