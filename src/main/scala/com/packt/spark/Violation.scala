@@ -1,0 +1,66 @@
+package com.packt.spark
+
+import com.github.nscala_time.time.Imports._
+import geotrellis.vector._
+import com.opencsv._
+
+case class Violation(
+  issueTime: DateTime,
+  location: Point,
+  state: String,
+  agency: String,
+  ticket: Ticket
+)
+
+object Violation {
+  private val coordsRx = """\(([^,]+),([^)]+)\)""".r
+  private val violationColumn: Map[String, Int] =
+    List(
+      "issue_date",
+      "state",
+      "plate",
+      "division",
+      "location",
+      "location-standardized",
+      "coordinates",
+      "description",
+      "fine",
+      "agency",
+      "location"
+    ).zipWithIndex.toMap
+
+  def parseTime(s: String): DateTime =
+    DateTime.parse(s, DateTimeFormat.forPattern("MM/DD/YYYY HH:mm:ss aa"))
+
+  def parseLocation(l: String): Option[Point] =
+    l match {
+      case coordsRx(lat, lng) =>
+        Some(Point(lng.toDouble, lat.toDouble))
+      case _ =>
+        None
+    }
+
+  def rowParser: String => Option[Violation] = {
+    val parser = new CSVParser(',')
+
+    { row =>
+      val fields = parser.parseLine(row)
+      parseLocation(fields(violationColumn("coordinates")))
+        .map { point =>
+          Violation(
+            issueTime = parseTime(fields(violationColumn("issue_date"))),
+            location = point,
+            state = fields(violationColumn("state")),
+            agency = fields(violationColumn("agency")),
+            Ticket(
+              fine = fields(violationColumn("fine")).replace("$", "").toDouble,
+              description = fields(violationColumn("description"))
+            )
+          )
+        }
+    }
+  }
+
+  def fromRow(row: String): Option[Violation] =
+    rowParser(row)
+}

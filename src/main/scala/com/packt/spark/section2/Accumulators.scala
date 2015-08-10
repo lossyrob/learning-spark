@@ -1,0 +1,41 @@
+package com.packt.spark.section2
+
+import com.packt.spark._
+import org.apache.spark._
+
+object Accumulators extends ExampleApp {
+  def run() =
+    withSparkContext { implicit sc =>
+      val validAcc = sc.accumulator(0)
+      val invalidAcc = sc.accumulator(0)
+      val totalFineAcc = sc.accumulator(0.0)
+ 
+      val violations =
+        fullDataset
+          .mapPartitions { partition =>
+            val parse = Violation.rowParser
+            partition.flatMap { line =>
+              parse(line) match {
+                case v @ Some(violation) if violation.ticket.fine > 5.0 =>
+                  validAcc += 1
+                  totalFineAcc += violation.ticket.fine
+                  v
+                case _ =>
+                  invalidAcc += 1
+                  None
+              }
+            }
+          }
+
+      violations.foreach { x => }
+
+      val validCount = validAcc.value
+      val invalidCount = invalidAcc.value
+      val totalFines = totalFineAcc.value
+
+      println(s"Valid count is $validCount")
+      println(s"Invalid count is $invalidCount")
+      println(f"Total fines: $$${totalFines}%,1.2f")
+      waitForUser()
+    }
+}

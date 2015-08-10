@@ -1,0 +1,34 @@
+package com.packt.spark.section2
+
+import org.apache.spark._
+import com.github.nscala_time.time.Imports._
+
+case class DataDateRange(start: DateTime, end: DateTime)
+
+object DataDateRange {
+  private val emptyDate = new DateTime(1000, 1, 1, 0, 0)
+
+  def empty = DataDateRange(emptyDate)
+
+  def apply(dt: DateTime): DataDateRange =
+    DataDateRange(dt, dt)
+
+  def covering(range1: DataDateRange, range2: DataDateRange): DataDateRange =
+    if(range1.start == emptyDate) range2
+    else {
+      if(range2.start == emptyDate) range1
+      else {
+        val ordering = implicitly[Ordering[DateTime]]
+        val start = ordering.min(range1.start, range2.start)
+        val end = ordering.max(range1.end, range2.end)
+
+        DataDateRange(start, end)
+      }
+    }
+
+  implicit object DataDateRangeAccumulatorParam extends AccumulatorParam[DataDateRange] {
+    def zero(range: DataDateRange) = empty
+    def addInPlace(range1: DataDateRange, range2: DataDateRange) =
+      covering(range1, range2)
+  }
+}

@@ -7,7 +7,7 @@ import sbtassembly.AssemblyPlugin.autoImport._
 
 object Version {
   val scala       = "2.10.5"
-  val spark       = "1.4.0"
+  val spark       = "1.4.1"
 
   val geotrellis  = "0.10.0-SNAPSHOT"
 }
@@ -44,7 +44,9 @@ object Build extends Build {
       scalaVersion := Version.scala,
 
       // raise memory limits here if necessary
-      javaOptions += "-Xmx2G",
+      javaOptions += "-Xmx5G",
+
+      mainClass in (Compile, run) := Some("com.packt.spark.section2.KeyValueRDDs"),
 
       fork := true,
       connectInput in run := true,
