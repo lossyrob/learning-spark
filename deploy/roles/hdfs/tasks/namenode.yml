@@ -1,0 +1,31 @@
+---
+- name: Install Hadoop HDFS NameNode
+  apt: pkg=hadoop-hdfs-namenode={{ hdfs_version }}
+       state=present
+
+- name: Configure Hadoop HDFS NameNode
+  template: src={{ item }}.xml.j2 dest={{ hdfs_conf_dir }}/{{ item | replace("namenode-", "") }}.xml
+  with_items:
+    - core-site
+    - namenode-hdfs-site
+  notify:
+    - Restart Hadoop HDFS NameNode
+
+- name: Create Hadoop HDFS NameNode data directories
+  file: path={{ item }}
+        owner=vagrant
+        group=vagrant
+        state=directory
+  register: created_hdfs_namenode_data_dir
+  with_items:
+    - /media/persistent0
+
+- name: Format HDFS NameNode data directories
+  sudo_user: hdfs
+  command: "hdfs namenode -format"
+  when: created_hdfs_namenode_data_dir | changed
+  with_items:
+    - /media/persistent0
+
+- name: Enable and start the Hadoop HDFS NameNode service
+  service: name=hadoop-hdfs-namenode enabled=yes state=started

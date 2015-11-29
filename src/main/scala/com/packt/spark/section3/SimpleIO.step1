@@ -1,0 +1,42 @@
+package com.packt.spark.section3
+
+import com.packt.spark._
+import org.apache.spark._
+import org.apache.spark.rdd._
+import geotrellis.vector._
+
+object SimpleIO extends ExampleApp {
+  def run() =
+    withSparkContext { implicit sc =>
+      val neighborhoods = Neighborhoods.fromJson("data/Neighborhoods_Philadelphia.geojson")
+      val bcNeighborhoods = sc.broadcast(neighborhoods)
+
+      val neighborhoodsToViolations: RDD[(NeighborhoodData, Violation)] =
+        fullDataset
+          .mapPartitions { rows =>
+            val parse = Violation.rowParser
+            rows.flatMap { row => parse(row) }
+          }
+          .filter(_.ticket.fine > 5.0)
+          .flatMap { violation =>
+            val nb = bcNeighborhoods.value
+            nb.find { case Feature(polygon, _) =>
+              polygon.contains(violation.location)
+            }.map { case Feature(_, neighborhood) =>
+              (neighborhood, violation)
+            }
+          }
+
+      csvExample(neighborhoodsToViolations)
+    }
+
+  def csvExample(neighborhoodsToViolations: RDD[(NeighborhoodData, Violation)])(implicit sc: SparkContext): Unit = {
+    val path = "/Users/rob/tmp/TEST-OUT-SPARK-CSV"
+
+    val neighborhoodsToCounts: RDD[(NeighborhoodData, Int)] =
+      neighborhoodsToViolations
+        .mapValues(x => 1)
+        .reduceByKey(_ + _)
+  }
+
+}

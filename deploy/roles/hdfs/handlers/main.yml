@@ -1,0 +1,6 @@
+---
+- name: Restart Hadoop HDFS NameNode
+  service: name=hadoop-hdfs-namenode state=restarted
+
+- name: Restart Hadoop HDFS DataNode
+  service: name=hadoop-hdfs-datanode state=restarted

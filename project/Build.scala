@@ -7,7 +7,7 @@ import sbtassembly.AssemblyPlugin.autoImport._
 
 object Version {
   val scala       = "2.10.5"
-  val spark       = "1.4.0"
+  val spark       = "1.4.1"
 
   val geotrellis  = "0.10.0-SNAPSHOT"
 }
@@ -48,7 +48,10 @@ object Build extends Build {
 
 //      mainClass in (Compile, run) := Some("com.packt.spark.section5.FeatureExtraction"),
 //      mainClass in (Compile, run) := Some("com.packt.spark.section2.KeyValueRDDs"),
-      mainClass in (Compile, run) := Some("com.packt.spark.section3.StoringOurData"),
+//      mainClass in (Compile, run) := Some("com.packt.spark.section3.SimpleIO"),
+      mainClass in (Compile, run) := Some("com.packt.spark.section3.HadoopAPI"),
+//      mainClass in (Compile, run) := Some("com.packt.spark.section3.Cassandra"),
+//      mainClass in (Compile, run) := Some("com.packt.spark.section3.Parquet"),
 
       fork := true,
       connectInput in run := true,
@@ -57,6 +60,7 @@ object Build extends Build {
         "org.apache.spark" %% "spark-core" % Version.spark,
         "org.apache.spark" %% "spark-mllib" % Version.spark,
         "org.apache.spark" %% "spark-sql" % Version.spark,
+        "com.datastax.spark" %% "spark-cassandra-connector" % "1.4.0",
         "com.opencsv" % "opencsv"      % "3.4",
         "com.github.nscala-time" %% "nscala-time" % "1.6.0",
         "com.azavea.geotrellis" %% "geotrellis-raster" % Version.geotrellis,

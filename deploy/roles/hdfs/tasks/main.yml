@@ -1,0 +1,14 @@
+---
+- name: Configure Cloudera APT key
+  apt_key: url="http://archive.cloudera.com/cdh5/ubuntu/{{ ansible_distribution_release }}/amd64/cdh/archive.key"
+           state=present
+
+- name: Configure the Cloudera APT repositories
+  apt_repository: repo="deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/{{ ansible_distribution_release }}/amd64/cdh {{ ansible_distribution_release }}-{{ hdfs_cloudera_distribution }} contrib"
+                  state=present
+
+- name: Pin Cloudera APT repositories
+  template: src=cdh5.j2 dest=/etc/apt/preferences.d/cdh5
+
+- { include: namenode.yml, when: hdfs_namenode }
+- { include: datanode.yml, when: not hdfs_namenode }

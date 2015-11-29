@@ -11,6 +11,10 @@ trait ExampleApp {
         .setAppName("Learning Spark")
         .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
         .set("spark.kryo.registrator", "com.packt.spark.KryoRegistrator")
+//        .set("spark.default.parallelism", "10")
+        .set("spark.cassandra.connection.host", "127.0.0.1")
+        // .set("spark.cassandra.auth.username", "cassandra")            
+        // .set("spark.cassandra.auth.password", "cassandra")
 
     val sc = new SparkContext(conf)
 

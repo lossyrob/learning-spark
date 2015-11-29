@@ -51,7 +51,7 @@ class PointUDT extends UserDefinedType[Point] {
 
 case class ViolationCount(neighborhood: String, time: java.sql.Timestamp, violationCount: Int)
 
-object StoringOurData extends ExampleApp {
+object Main extends ExampleApp {
   def run() =
     withSparkContext { implicit sc =>
       val neighborhoods = Neighborhoods.fromJson("data/Neighborhoods_Philadelphia.geojson")
